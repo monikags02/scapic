@@ -1,0 +1,239 @@
+var MongoClient = require(&#39;mongodb&#39;).MongoClient , assert = require(&#39;assert&#39;);
+var url = &#39;mongodb://localhost:27017/myproject&#39;;
+MongoClient.connect(url, function(err, db) {
+assert.equal(null, err);
+console.log(&quot;Connected correctly to server&quot;);
+db.collection(&#39;inserts&#39;).insertOne({a:1}, function(err, r) {
+assert.equal(null, err);
+assert.equal(1, r.insertedCount);
+db.collection(&#39;inserts&#39;).insertMany([{a:2}, {a:3}], function(err, r) {
+assert.equal(null, err);
+assert.equal(2, r.insertedCount);
+db.close();
+});
+});
+});
+var MongoClient = require(&#39;mongodb&#39;).MongoClient, assert = require(&#39;assert&#39;);
+var url = &#39;mongodb://localhost:27017/myproject&#39;;
+MongoClient.connect(url, function(err, db) {
+assert.equal(null, err);
+console.log(&quot;Connected correctly to server&quot;);
+db.collection(&#39;inserts&#39;).insertOne({
+a:1
+, b: function() { return &#39;hello&#39;; }
+}, {
+w: &#39;majority&#39;
+, wtimeout: 10000
+, serializeFunctions: true
+}, function(err, r) {
+assert.equal(null, err);
+assert.equal(1, r.insertedCount);
+db.close();
+});
+});
+var Long = require(&#39;mongodb&#39;).Long;
+var Decimal = require(&#39;mongodb&#39;).Decimal128;
+var MongoClient = require(&#39;mongodb&#39;).MongoClient , assert = require(&#39;assert&#39;);
+var url = &#39;mongodb://localhost:27017/myproject&#39;;
+MongoClient.connect(url, function(err, db) {
+assert.equal(null, err);
+console.log(&quot;Connected correctly to server&quot;);
+var longValue = Long(1787);
+var decimalValue = Decimal.fromString(&quot;27.8892836&quot;);
+
+db.collection(&#39;numbers&#39;).insertMany([ { a : longValue }, { b : decimalValue } ], function(err, r) {
+assert.equal(null, err);
+assert.equal(2, r.insertedCount);
+db.close();
+});
+});
+var MongoClient = require(&#39;mongodb&#39;).MongoClient , assert = require(&#39;assert&#39;);
+var url = &#39;mongodb://localhost:27017/myproject&#39;;
+MongoClient.connect(url, function(err, db) {
+assert.equal(null, err);
+console.log(&quot;Connected correctly to server&quot;);
+var col = db.collection(&#39;updates&#39;);
+col.insertMany([{a:1}, {a:2}, {a:2}], function(err, r) {
+assert.equal(null, err);
+assert.equal(3, r.insertedCount);
+col.updateOne({a:1}, {$set: {b: 1}}, function(err, r) {
+assert.equal(null, err);
+assert.equal(1, r.matchedCount);
+assert.equal(1, r.modifiedCount);
+col.updateMany({a:2}, {$set: {b: 1}}, function(err, r) {
+assert.equal(null, err);
+assert.equal(2, r.matchedCount);
+assert.equal(2, r.modifiedCount);
+col.updateOne({a:3}, {$set: {b: 1}}, {
+upsert: true
+}, function(err, r) {
+assert.equal(null, err);
+assert.equal(0, r.matchedCount);
+assert.equal(1, r.upsertedCount);
+db.close();
+});
+});
+});
+});
+});
+var MongoClient = require(&#39;mongodb&#39;).MongoClient , assert = require(&#39;assert&#39;);
+var url = &#39;mongodb://localhost:27017/myproject&#39;;
+MongoClient.connect(url, function(err, db) {
+assert.equal(null, err);
+console.log(&quot;Connected correctly to server&quot;);
+var col = db.collection(&#39;removes&#39;);
+col.insertMany([{a:1}, {a:2}, {a:2}], function(err, r) {
+assert.equal(null, err);
+assert.equal(3, r.insertedCount);
+
+col.deleteOne({a:1}, function(err, r) {
+assert.equal(null, err);
+assert.equal(1, r.deletedCount);
+col.deleteMany({a:2}, function(err, r) {
+assert.equal(null, err);
+assert.equal(2, r.deletedCount);
+db.close();
+});
+});
+});
+});
+var MongoClient = require(&#39;mongodb&#39;).MongoClient , assert = require(&#39;assert&#39;);
+var url = &#39;mongodb://localhost:27017/myproject&#39;;
+MongoClient.connect(url, function(err, db) {
+assert.equal(null, err);
+console.log(&quot;Connected correctly to server&quot;);
+var col = db.collection(&#39;findAndModify&#39;);
+col.insert([{a:1}, {a:2}, {a:2}], function(err, r) {
+assert.equal(null, err);
+assert.equal(3, r.result.n);
+col.findOneAndUpdate({a:1}, {$set: {b: 1}}, {
+returnOriginal: false
+, sort: [[a,1]]
+, upsert: true
+}, function(err, r) {
+assert.equal(null, err);
+assert.equal(1, r.value.b);
+col.findOneAndDelete({a:2}, function(err, r) {
+assert.equal(null, err);
+assert.ok(r.value.b == null);
+db.close();
+});
+});
+});
+});
+var MongoClient = require(&#39;mongodb&#39;).MongoClient , assert = require(&#39;assert&#39;);
+var url = &#39;mongodb://localhost:27017/myproject&#39;;
+MongoClient.connect(url, function(err, db) {
+assert.equal(null, err);
+console.log(&quot;Connected correctly to server&quot;);
+var col = db.collection(&#39;findAndModify&#39;);
+
+col.insert([{a:1}, {a:2}, {a:2}], function(err, r) {
+assert.equal(null, err);
+assert.equal(3, r.result.n);
+col.findOneAndDelete({a:1}, {
+sort: [[a,1]]
+}
+, function(err, r) {
+assert.equal(null, err);
+assert.ok(r.value.b == null);
+db.close();
+});
+});
+});
+var MongoClient = require(&#39;mongodb&#39;).MongoClient , assert = require(&#39;assert&#39;);
+var url = &#39;mongodb://localhost:27017/myproject&#39;;
+MongoClient.connect(url, function(err, db) {
+assert.equal(null, err);
+console.log(&quot;Connected correctly to server&quot;);
+var col = db.collection(&#39;bulk_write&#39;);
+col.bulkWrite([
+{ insertOne: { document: { a: 1 } } }
+, { updateOne: { filter: {a:2}, update: {$set: {a:2}}, upsert:true } }
+, { updateMany: { filter: {a:2}, update: {$set: {a:2}}, upsert:true } }
+, { deleteOne: { filter: {c:1} } }
+, { deleteMany: { filter: {c:1} } }
+, { replaceOne: { filter: {c:3}, replacement: {c:4}, upsert:true}}]
+, {ordered:true, w:1}, function(err, r) {
+assert.equal(null, err);
+assert.equal(1, r.insertedCount);
+assert.equal(1, Object.keys(r.insertedIds).length);
+assert.equal(1, r.matchedCount);
+assert.equal(0, r.modifiedCount);
+assert.equal(0, r.deletedCount);
+assert.equal(2, r.upsertedCount);
+assert.equal(2, Object.keys(r.upsertedIds).length);
+db.close();
+});
+});
+var MongoClient = require(&#39;mongodb&#39;).MongoClient , assert = require(&#39;assert&#39;);
+var url = &#39;mongodb://localhost:27017/myproject&#39;;
+MongoClient.connect(url, function(err, db) {
+assert.equal(null, err);
+console.log(&quot;Connected correctly to server&quot;);
+
+var col = db.collection(&#39;bulkops&#39;);
+var bulk = col.initializeOrderedBulkOp();
+for(var i = 0; i &lt; 10; i++) {
+bulk.insert({a: i});
+}
+for(var i = 0; i &lt; 10; i++) {
+bulk.find({b:i}).upsert().updateOne({b:1});
+}
+bulk.find({b:1}).deleteOne();
+bulk.execute(function(err, result) {
+assert.equal(null, err);
+db.close();
+});
+});
+var MongoClient = require(&#39;mongodb&#39;).MongoClient , assert = require(&#39;assert&#39;);
+var url = &#39;mongodb://localhost:27017/myproject&#39;;
+MongoClient.connect(url, function(err, db) {
+assert.equal(null, err);
+console.log(&quot;Connected correctly to server&quot;);
+var col = db.collection(&#39;find&#39;);
+col.insertMany([{a:1}, {a:1}, {a:1}], function(err, r) {
+assert.equal(null, err);
+assert.equal(3, r.insertedCount);
+col.find({a:1}).limit(2).toArray(function(err, docs) {
+assert.equal(null, err);
+assert.equal(2, docs.length);
+db.close();
+});
+});
+});
+var MongoClient = require(&#39;mongodb&#39;).MongoClient , assert = require(&#39;assert&#39;);
+var url = &#39;mongodb://localhost:27017/myproject&#39;;
+MongoClient.connect(url, function(err, db) {
+assert.equal(null, err);
+console.log(&quot;Connected correctly to server&quot;);
+var col = db.collection(&#39;find&#39;);
+col.insertMany([{a:1}, {a:1}, {a:1}], function(err, r) {
+assert.equal(null, err);
+assert.equal(3, r.insertedCount);
+col.find({a:1}).limit(2).next(function(err, doc) {
+assert.equal(null, err);
+assert.ok(doc != null);
+db.close();
+});
+
+});
+});
+var MongoClient = require(&#39;mongodb&#39;).MongoClient , assert = require(&#39;assert&#39;);
+var url = &#39;mongodb://localhost:27017/myproject&#39;;
+MongoClient.connect(url, function(err, db) {
+assert.equal(null, err);
+console.log(&quot;Connected correctly to server&quot;);
+var col = db.collection(&#39;find&#39;);
+col.insertMany([{a:1}, {a:1}, {a:1}], function(err, r) {
+assert.equal(null, err);
+assert.equal(3, r.insertedCount);
+col.find({a:1}).limit(2).each(function(err, doc) {
+if(doc) {
+} else {
+db.close();
+return false;
+}
+});
+});
+});
